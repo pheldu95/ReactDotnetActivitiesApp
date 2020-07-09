@@ -3,12 +3,20 @@ import { Header, Icon, List, Container } from 'semantic-ui-react';
 import axios from 'axios';
 import { IActivity } from '../models/activity';
 import NavBar from '../../features/nav/NavBar';
+import ActivityDashboard from '../../features/activities/dashboard/ActivityDashboard';
 
 
 const App = () => {
   //we use useState from react to create our state
   const [activities, setActivities] = useState<IActivity[]>([]);
+  //useState<IActivity | null> means that our selected activity can be a type of IActivity, or it can be null (like if one isn't slected)
+  const [selectedActivity, setSelectedActivity] = useState<IActivity | null>();
   
+  //we will pass this function down to our activity list
+  //activity dashboard will be the middleman
+  const handleSelectActivity = (id: string) =>{
+    setSelectedActivity(activities.filter(a => a.id === id)[0])
+  }
   //no longer need componentDidMount
   useEffect(()=> {
     //add <IActivity[]> after the .get, telling that it should be getting an array of IActivities
@@ -23,11 +31,12 @@ const App = () => {
     <Fragment>
       <NavBar/>
       <Container style={{marginTop: '7em'}}>
-        <List>
-          {activities.map((activity) => (
-            <List.Item key={activity.id}>{activity.title}</List.Item>
-          ))}
-        </List>
+        <ActivityDashboard 
+          activities={activities} 
+          selectActivity={handleSelectActivity}
+          //the exclamation mark says it will either be an activity (IActivity) or null
+          selectedActivity={selectedActivity!}
+        />
       </Container>
       
     </Fragment>
