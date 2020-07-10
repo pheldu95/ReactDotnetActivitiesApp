@@ -13,20 +13,41 @@ interface IProps{
     selectActivity: (id: string) => void;
     //will be an IActivity or null
     selectedActivity: IActivity | null;
+    editMode: boolean;
+    //says: "setEditMode will be a function that takes boolean editMode as its argument and returns void"
+    setEditMode: (editMode: boolean) => void;
+    setSelectedActivity: (activity: IActivity | null) => void
 }
 //{activites} is just destructuring props.activities. it's the same thing
 //but now we can just type activities instead of props.activities when we are mapping it
-const ActivityDashboard: React.FC<IProps> = ({ activities, selectActivity, selectedActivity}) => {
+const ActivityDashboard: React.FC<IProps> = ({ 
+    activities, 
+    selectActivity, 
+    selectedActivity,
+    editMode,
+    setEditMode,
+    setSelectedActivity
+}) => {
     return (
         <Grid>
             <Grid.Column width={10}>
                 <ActivityList activities={activities} selectActivity={selectActivity}/>
             </Grid.Column>
             <Grid.Column width= {6}>
-                {selectedActivity &&
-                    <ActivityDetails activity={selectedActivity}/>
+                {selectedActivity && !editMode && (
+                    <ActivityDetails 
+                        setSelectedActivity={setSelectedActivity} 
+                        activity={selectedActivity} 
+                        setEditMode={setEditMode}
+                    />
+                )}
+                {editMode &&
+                    <ActivityForm 
+                        setEditMode={setEditMode}
+                        //the ! means it's ok if we send down null as the selectedActivity
+                        activity={selectedActivity!} 
+                    />
                 }
-                <ActivityForm/>
             </Grid.Column>
         </Grid>
     )

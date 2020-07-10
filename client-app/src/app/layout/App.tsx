@@ -11,12 +11,19 @@ const App = () => {
   const [activities, setActivities] = useState<IActivity[]>([]);
   //useState<IActivity | null> means that our selected activity can be a type of IActivity, or it can be null (like if one isn't slected)
   const [selectedActivity, setSelectedActivity] = useState<IActivity | null>();
-  
   //we will pass this function down to our activity list
   //activity dashboard will be the middleman
   const handleSelectActivity = (id: string) =>{
     setSelectedActivity(activities.filter(a => a.id === id)[0])
   }
+  //we will toggle this edit boolean
+  const [editMode, setEditMode] = useState(false);
+
+  const handleOpenCreateForm = () => {
+    setSelectedActivity(null);
+    setEditMode(true);
+  }
+
   //no longer need componentDidMount
   useEffect(()=> {
     //add <IActivity[]> after the .get, telling that it should be getting an array of IActivities
@@ -29,13 +36,16 @@ const App = () => {
 
   return (
     <Fragment>
-      <NavBar/>
+      <NavBar openCreateForm={handleOpenCreateForm}/>
       <Container style={{marginTop: '7em'}}>
         <ActivityDashboard 
           activities={activities} 
           selectActivity={handleSelectActivity}
           //the exclamation mark says it will either be an activity (IActivity) or null
           selectedActivity={selectedActivity!}
+          editMode={editMode}
+          setEditMode={setEditMode}
+          setSelectedActivity={setSelectedActivity}
         />
       </Container>
       
