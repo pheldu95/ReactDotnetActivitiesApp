@@ -16,7 +16,10 @@ interface IProps{
     editMode: boolean;
     //says: "setEditMode will be a function that takes boolean editMode as its argument and returns void"
     setEditMode: (editMode: boolean) => void;
-    setSelectedActivity: (activity: IActivity | null) => void
+    setSelectedActivity: (activity: IActivity | null) => void;
+    createActivity: (activity: IActivity) => void;
+    editActivity: (activity: IActivity) => void;
+
 }
 //{activites} is just destructuring props.activities. it's the same thing
 //but now we can just type activities instead of props.activities when we are mapping it
@@ -26,7 +29,9 @@ const ActivityDashboard: React.FC<IProps> = ({
     selectedActivity,
     editMode,
     setEditMode,
-    setSelectedActivity
+    setSelectedActivity,
+    createActivity,
+    editActivity
 }) => {
     return (
         <Grid>
@@ -42,10 +47,14 @@ const ActivityDashboard: React.FC<IProps> = ({
                     />
                 )}
                 {editMode &&
+                // we give our activity form a key so that when the key changes, the state updates
                     <ActivityForm 
+                        key={selectedActivity&& selectedActivity.id || 0}
                         setEditMode={setEditMode}
                         //the ! means it's ok if we send down null as the selectedActivity
                         activity={selectedActivity!} 
+                        createActivity={createActivity}
+                        editActivity={editActivity}
                     />
                 }
             </Grid.Column>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import { Header, Icon, List, Container } from 'semantic-ui-react';
+import { Container } from 'semantic-ui-react';
 import axios from 'axios';
 import { IActivity } from '../models/activity';
 import NavBar from '../../features/nav/NavBar';
@@ -14,7 +14,8 @@ const App = () => {
   //we will pass this function down to our activity list
   //activity dashboard will be the middleman
   const handleSelectActivity = (id: string) =>{
-    setSelectedActivity(activities.filter(a => a.id === id)[0])
+    setSelectedActivity(activities.filter(a => a.id === id)[0]);
+    setEditMode(false);
   }
   //we will toggle this edit boolean
   const [editMode, setEditMode] = useState(false);
@@ -24,12 +25,35 @@ const App = () => {
     setEditMode(true);
   }
 
+  const handleCreateActivity = (activity: IActivity) =>{
+    //use spread operator to add new activity to activities array
+    setActivities([...activities, activity]);
+    //show the details view for our new activity
+    setSelectedActivity(activity);
+    setEditMode(false);
+  }
+
+  const handleEditActivity = (activity: IActivity) =>{
+    //filter out the activity we are edititing
+    //and then just add the updated activity to the array
+    setActivities([...activities.filter(a => a.id !== activity.id), activity]);
+    setSelectedActivity(activity);
+    setEditMode(false);
+  }
+
   //no longer need componentDidMount
   useEffect(()=> {
     //add <IActivity[]> after the .get, telling that it should be getting an array of IActivities
-    axios.get<IActivity[]>('http://localhost:5000/api/activities').then(response => {
+    axios.get<IActivity[]>('http://localhost:5000/api/activities')
+    .then(response => {
+      let activities: IActivity[] = [];
+      //reformat the date so our html can read it
+      response.data.forEach(activity =>{
+        activity.date = activity.date.split('.')[0];
+        activities.push(activity);
+      })
       //insted of using this.setState, use setActivities
-      setActivities(response.data);
+      setActivities(activities);
     });
     //the empty array added at the end ensures our useEffect onlky runs one time, instead of continuously
   }, [])
@@ -46,6 +70,8 @@ const App = () => {
           editMode={editMode}
           setEditMode={setEditMode}
           setSelectedActivity={setSelectedActivity}
+          createActivity={handleCreateActivity}
+          editActivity={handleEditActivity}
         />
       </Container>
       
