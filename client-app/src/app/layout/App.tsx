@@ -41,6 +41,10 @@ const App = () => {
     setEditMode(false);
   }
 
+  const handleDeleteActivity = (id: string) =>{
+    setActivities([...activities.filter(a => a.id !== id)])
+  }
+
   //no longer need componentDidMount
   useEffect(()=> {
     //add <IActivity[]> after the .get, telling that it should be getting an array of IActivities
@@ -72,6 +76,7 @@ const App = () => {
           setSelectedActivity={setSelectedActivity}
           createActivity={handleCreateActivity}
           editActivity={handleEditActivity}
+          deleteActivity={handleDeleteActivity}
         />
       </Container>
       
